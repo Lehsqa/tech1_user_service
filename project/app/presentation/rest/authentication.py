@@ -1,7 +1,9 @@
 import os
 from datetime import timedelta
 
-from fastapi import APIRouter, Request, status, HTTPException
+from fastapi import APIRouter, Request, status, HTTPException, Depends
+
+from fastapi_limiter.depends import RateLimiter
 
 from project.app.application.authentication import authenticate_user, create_access_token
 from project.app.domain.authentication import (
@@ -10,9 +12,11 @@ from project.app.domain.authentication import (
 )
 
 router = APIRouter(prefix="/token", tags=["Token"])
+times: int = int(os.environ.get("LIMITER_TIMES"))
+seconds: int = int(os.environ.get("LIMITER_SECONDS"))
 
 
-@router.post("", status_code=status.HTTP_200_OK)
+@router.post("", dependencies=[Depends(RateLimiter(times=times, seconds=seconds))], status_code=status.HTTP_200_OK)
 async def login_for_access_token(
     _: Request,
     schema: TokenClaimRequestBody,

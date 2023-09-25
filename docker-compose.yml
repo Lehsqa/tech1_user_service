@@ -20,6 +20,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=foo
+  redis:
+    image: redis:7-alpine
+    restart: always
   nginx:
     build: ./nginx
     ports:

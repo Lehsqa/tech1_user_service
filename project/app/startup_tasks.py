@@ -2,6 +2,8 @@ import random
 
 from faker import Faker
 
+from fastapi_limiter import FastAPILimiter
+
 from project.app.application.users import create
 from project.app.domain.articles import ArticleRepository, ArticleUncommited
 from project.app.domain.users import User
@@ -30,3 +32,9 @@ async def create_random_users_articles(num_users: int = random.randint(5, 10)):
                     author_id=user.id
                 )
             )
+
+
+async def rate_limiter():
+    import redis.asyncio as redis
+    redis = redis.from_url("redis://redis", encoding="utf-8", decode_responses=True)
+    await FastAPILimiter.init(redis)
